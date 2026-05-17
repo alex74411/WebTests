@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chloé 柯蕾 - 精選美學選品店</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #faf6f0;
+            color: #4a3f35;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+            display: block;
+        }
+        .app-container {
+            max-width: 450px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(74, 63, 53, 0.08);
+            position: relative;
+            padding-bottom: 40px;
+        }
+        
+        /* Profile Header */
+        .header {
+            text-align: center;
+            padding: 40px 24px 20px 24px;
+            background: linear-gradient(180deg, #f3ede4 0%, #ffffff 100%);
+        }
+        .avatar-container {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 16px auto;
+        }
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(74, 63, 53, 0.15);
+        }
+        .badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: #c49a70;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .kol-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2b231c;
+            margin-bottom: 6px;
+        }
+        .kol-bio {
+            font-size: 13px;
+            color: #8a7968;
+            line-height: 1.5;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: table;
+            width: 85%;
+            margin: 0 auto 24px auto;
+            border-top: 1px solid #f3ede4;
+            border-bottom: 1px solid #f3ede4;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .stat-item {
+            display: table-cell;
+            width: 33.33%;
+        }
+        .stat-val {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2b231c;
+        }
+        .stat-lbl {
+            font-size: 11px;
+            color: #b0a190;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2b231c;
+            padding: 0 20px;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+            border-left: 4px solid #c49a70;
+            margin-left: 20px;
+        }
+
+        /* Product Grid */
+        .product-list {
+            padding: 0 20px;
+        }
+        .product-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #f3ede4;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(74, 63, 53, 0.02);
+        }
+        .product-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background-color: #fcfbfa;
+        }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(43, 35, 28, 0.85);
+            color: #ffffff;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+        .product-content {
+            padding: 16px;
+        }
+        .product-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2b231c;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .product-desc {
+            font-size: 12.5px;
+            color: #7a6e61;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .product-meta {
+            display: table;
+            width: 100%;
+        }
+        .price-box {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .price-currency {
+            font-size: 12px;
+            color: #b54747;
+            font-weight: 600;
+        }
+        .price-amount {
+            font-size: 19px;
+            color: #b54747;
+            font-weight: 700;
+        }
+        .price-original {
+            font-size: 11px;
+            color: #b0a190;
+            text-decoration: line-through;
+            margin-left: 4px;
+        }
+        .action-box {
+            display: table-cell;
+            text-align: right;
+            vertical-align: middle;
+        }
+        .buy-btn {
+            display: inline-block;
+            background-color: #2b231c;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+        }
+        .buy-btn:hover {
+            background-color: #4a3f35;
+        }
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #b0a190;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- KOL 個人基本資料 -->
+        <div class="header">
+            <div class="avatar-container">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80" class="avatar" alt="Chloé">
+                <span class="badge">店長</span>
+            </div>
+            <div class="kol-name">Chloé 柯蕾 ✨</div>
+            <div class="kol-bio">分享極簡美學與質感生活。這裡是我私下愛用的精選好物，與品牌爭取的獨家限時優惠通路！</div>
+        </div>
+
+        <!-- 社群數據/特點展示 -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-val">32.5萬</div>
+                <div class="stat-lbl">粉絲追蹤</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">12</div>
+                <div class="stat-lbl">本月選品</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">4.9 ★</div>
+                <div class="stat-lbl">好評推介</div>
+            </div>
+        </div>
+
+        <div class="section-title">限時聯名特惠選品</div>
+
+        <!-- 商品刊登列表區塊 -->
+        <div class="product-list">
+            
+            <!-- 商品 1 卡片 -->
+            <div class="product-card">
+                <div class="product-img-wrapper">
+                    <span class="product-tag">獨家 8 折</span>
+                    <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&auto=format&fit=crop&q=80" class="product-img" alt="復古皮革單肩包">
+                </div>
+                <div class="product-content">
+                    <div class="product-title">法式復古手工植物鞣製皮革單肩包</div>
+                    <div class="product-desc">出鏡率最高、被問爆的復古私包！純手工真皮，越用越有光澤，內容量完美容納隨身物品，日常、約會都百搭。</div>
+                    <div class="product-meta">
+                        <div class="price-box">
+                            <span class="price-currency">NT$</span>
+                            <span class="price-amount">2,480</span>
+                            <span class="price-original">NT$ 3,100</span>
+                        </div>
+                        <div class="action-box">
+                            <!-- 💡 在下方 href="" 內修改你的業配/導購連結 -->
+                            <a href="https://example.com/kol-shop-bag" target="_blank" class="buy-btn">前往賣場</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品 2 卡片 -->
+            <div class="product-card">
+                <div class="product-img-wrapper">
+                    <span class="product-tag">免運優惠</span>
+                    <img src="https://images.unsplash.com/photo-1608248597481-496100c80836?w=500&auto=format&fit=crop&q=80" class="product-img" alt="有機香氛精油蠟燭">
+                </div>
+                <div class="product-content">
+                    <div class="product-title">極簡北歐風天然大豆香氛精油蠟燭 (木質調)</div>
+                    <div class="product-desc">每天收工後最療癒的儀式感。前調雪松，中調佛手柑，散發舒服的天然木質香氣，無毒大豆蠟，安心營造高質感空間。</div>
+                    <div class="product-meta">
+                        <div class="price-box">
+                            <span class="price-currency">NT$</span>
+                            <span class="price-amount">890</span>
+                            <span class="price-original">NT$ 1,200</span>
+                        </div>
+                        <div class="action-box">
+                            <!-- 💡 在下方 href="" 內修改你的業配/導購連結 -->
+                            <a href="https://example.com/kol-shop-candle" target="_blank" class="buy-btn">前往賣場</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            © 2026 Chloé Select. All Rights Reserved.
+        </div>
+    </div>
+
+</body>
+</html>
