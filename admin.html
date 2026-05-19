@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選品店後台控制面板</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1e1e24; color: #fff; padding: 30px;
+        }
+        .admin-container {
+            max-width: 600px; margin: 0 auto;
+            background: #2b2b36; padding: 25px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 { font-size: 20px; color: #4ecdc4; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px;}
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: #ccc; margin-bottom: 6px; }
+        input[type="text"], input[type="url"], textarea {
+            width: 100%; padding: 10px; background: #1e1e24;
+            border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px;
+        }
+        textarea { height: 80px; resize: vertical; }
+        input:focus, textarea:focus { outline: none; border-color: #4ecdc4; }
+        
+        .save-btn {
+            display: block; width: 100%; background: #ff6b6b; color: #fff;
+            border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; margin-top: 10px;
+        }
+        .save-btn:hover { background: #ff5252; }
+        
+        #toast {
+            display: none; background: #4ecdc4; color: #111;
+            padding: 10px; text-align: center; border-radius: 6px; margin-top: 15px; font-weight: bold;
+        }
+        .section-divider { margin: 25px 0; border-top: 1px dashed #555; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h1>⚙️ 選品店前台版位配置</h1>
+        
+        <div class="form-group">
+            <label>主打連結 1 - 按鈕文字：</label>
+            <input type="text" id="link1_title">
+        </div>
+        <div class="form-group">
+            <label>主打連結 1 - 導購網址：</label>
+            <input type="url" id="link1_url">
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-group">
+            <label>主打連結 2 - 按鈕文字：</label>
+            <input type="text" id="link2_title">
+        </div>
+        <div class="form-group">
+            <label>主打連結 2 - 導購網址：</label>
+            <input type="url" id="link2_url">
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-group">
+            <label>🛍️ 酷澎 (Coupang) 廣告代碼 1 (完整 iframe)：</label>
+            <textarea id="iframe1_code" placeholder="請將 <iframe ...></iframe> 完整代碼貼於此"></textarea>
+        </div>
+        <div class="form-group">
+            <label>🛍️ 酷澎 (Coupang) 廣告代碼 2 (選填)：</label>
+            <textarea id="iframe2_code" placeholder="若無第二個廣告請留白"></textarea>
+        </div>
+
+        <button class="save-btn" onclick="saveSettings()">儲存並發布至主頁</button>
+        <div id="toast">✅ 設定已儲存！請前往主頁查看更新。</div>
+    </div>
+
+    <script>
+        // 預設資料 (與主頁保持一致)
+        const defaultData = {
+            link1_title: "👉 點我領取美妝專屬 85 折優惠券",
+            link1_url: "https://example.com/discount",
+            link2_title: "🤍 質感真皮包包 (免運賣場)",
+            link2_url: "https://example.com/bag",
+            iframe1_code: `<iframe src="https://coupa.ng/cmWukG" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`,
+            iframe2_code: ``
+        };
+
+        // 載入時將既有資料填入輸入框
+        function loadSettings() {
+            const savedData = JSON.parse(localStorage.getItem('kolSettings')) || defaultData;
+            document.getElementById('link1_title').value = savedData.link1_title;
+            document.getElementById('link1_url').value = savedData.link1_url;
+            document.getElementById('link2_title').value = savedData.link2_title;
+            document.getElementById('link2_url').value = savedData.link2_url;
+            document.getElementById('iframe1_code').value = savedData.iframe1_code;
+            document.getElementById('iframe2_code').value = savedData.iframe2_code;
+        }
+
+        // 將輸入框的資料存入 localStorage
+        function saveSettings() {
+            const newData = {
+                link1_title: document.getElementById('link1_title').value,
+                link1_url: document.getElementById('link1_url').value,
+                link2_title: document.getElementById('link2_title').value,
+                link2_url: document.getElementById('link2_url').value,
+                iframe1_code: document.getElementById('iframe1_code').value,
+                iframe2_code: document.getElementById('iframe2_code').value
+            };
+            
+            localStorage.setItem('kolSettings', JSON.stringify(newData));
+            
+            // 顯示成功訊息
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // 啟動時執行載入
+        loadSettings();
+    </script>
+</body>
+</html>

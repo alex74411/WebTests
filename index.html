@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chloé 柯蕾 - 精選美學選品店</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #faf6f0;
+            color: #4a3f35;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding-bottom: 40px;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(180deg, #f3ede4 0%, #ffffff 100%);
+        }
+        .avatar {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        .name { font-size: 20px; font-weight: bold; color: #2b231c; }
+        .bio { font-size: 13px; color: #8a7968; margin-top: 5px; }
+        
+        .section-title {
+            font-size: 15px; font-weight: 600;
+            padding-left: 15px; border-left: 4px solid #c49a70;
+            margin: 25px 20px 15px;
+        }
+
+        /* 一般按鈕連結區塊 */
+        .links-container { padding: 0 20px; }
+        .promo-btn {
+            display: block;
+            width: 100%;
+            background: #2b231c;
+            color: #fff;
+            text-align: center;
+            padding: 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 12px;
+            transition: 0.2s;
+        }
+        .promo-btn:hover { background: #4a3f35; }
+
+        /* 酷澎 120x240 iframe 專屬展示區塊 (雙欄置中排列) */
+        .iframe-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+        .iframe-card {
+            background: #fff;
+            border: 1px solid #f3ede4;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .iframe-title {
+            font-size: 12px;
+            color: #7a6e61;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .footer { text-align: center; font-size: 11px; color: #b0a190; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80" class="avatar" alt="KOL Avatar">
+            <div class="name">Chloé 柯蕾 ✨</div>
+            <div class="bio">質感生活選物，為你把關每個日常小細節。</div>
+        </div>
+
+        <div class="section-title">✨ 本月主打活動</div>
+        <div class="links-container" id="regular-links-area">
+            <!-- 一般推薦連結將透過 JS 生成在這裡 -->
+        </div>
+
+        <div class="section-title">🛒 韓國大廠直送好物 (酷澎特惠)</div>
+        <div class="iframe-grid" id="iframe-area">
+            <!-- Coupang iframe 將透過 JS 生成在這裡 -->
+        </div>
+
+        <div class="footer">© 2026 Chloé Select. All Rights Reserved.</div>
+    </div>
+
+    <script>
+        // 預設資料 (確保第一次打開網頁時不會空空的)
+        const defaultData = {
+            link1_title: "👉 點我領取美妝專屬 85 折優惠券",
+            link1_url: "https://example.com/discount",
+            link2_title: "🤍 質感真皮包包 (免運賣場)",
+            link2_url: "https://example.com/bag",
+            iframe1_code: `<iframe src="https://coupa.ng/cmWukG" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`,
+            iframe2_code: `` // 預留第二個廣告版位
+        };
+
+        // 讀取並渲染畫面的主函數
+        function renderPage() {
+            // 從 localStorage 讀取資料，若無則使用預設值
+            const savedData = JSON.parse(localStorage.getItem('kolSettings')) || defaultData;
+
+            // 渲染一般連結
+            const linksArea = document.getElementById('regular-links-area');
+            linksArea.innerHTML = `
+                <a href="${savedData.link1_url}" target="_blank" class="promo-btn">${savedData.link1_title}</a>
+                <a href="${savedData.link2_url}" target="_blank" class="promo-btn">${savedData.link2_title}</a>
+            `;
+
+            // 渲染 Coupang Iframe 廣告
+            const iframeArea = document.getElementById('iframe-area');
+            let iframeHTML = '';
+            
+            if(savedData.iframe1_code.trim() !== '') {
+                iframeHTML += `<div class="iframe-card"><div class="iframe-title">推薦好物 1</div>${savedData.iframe1_code}</div>`;
+            }
+            if(savedData.iframe2_code && savedData.iframe2_code.trim() !== '') {
+                iframeHTML += `<div class="iframe-card"><div class="iframe-title">推薦好物 2</div>${savedData.iframe2_code}</div>`;
+            }
+            iframeArea.innerHTML = iframeHTML;
+        }
+
+        // 初次載入時渲染
+        renderPage();
+
+        // 監聽其他分頁 (控制頁) 的儲存動作，實現免重整即時更新
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'kolSettings') {
+                renderPage();
+            }
+        });
+    </script>
+</body>
+</html>
