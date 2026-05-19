@@ -41,7 +41,7 @@
             margin: 25px 20px 15px;
         }
 
-        /* 一般按鈕連結區塊 */
+        /* 10個一般連結按鈕區區 */
         .links-container { padding: 0 20px; }
         .promo-btn {
             display: block;
@@ -55,10 +55,11 @@
             font-weight: 600;
             margin-bottom: 12px;
             transition: 0.2s;
+            font-size: 14px;
         }
         .promo-btn:hover { background: #4a3f35; }
 
-        /* 酷澎 120x240 iframe 專屬展示區塊 (雙欄置中排列) */
+        /* 10個酷澎廣告網格區區 */
         .iframe-grid {
             display: flex;
             justify-content: center;
@@ -75,11 +76,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-bottom: 10px;
         }
         .iframe-title {
-            font-size: 12px;
-            color: #7a6e61;
-            margin-bottom: 10px;
+            font-size: 11px;
+            color: #b0a190;
+            margin-bottom: 8px;
             font-weight: 500;
         }
         .footer { text-align: center; font-size: 11px; color: #b0a190; margin-top: 40px; }
@@ -91,66 +93,70 @@
         <div class="header">
             <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80" class="avatar" alt="KOL Avatar">
             <div class="name">Chloé 柯蕾 ✨</div>
-            <div class="bio">質感生活選物，為你把關每個日常小細節。</div>
+            <div class="bio">歡迎來到我的選品空間！下方為大家整理了 10 大推薦連結與酷澎直送好物。</div>
         </div>
 
-        <div class="section-title">✨ 本月主打活動</div>
-        <div class="links-container" id="regular-links-area">
-            <!-- 一般推薦連結將透過 JS 生成在這裡 -->
-        </div>
+        <!-- 一般限時特惠連結區 (最多顯示10個) -->
+        <div class="section-title">🔥 粉絲獨家限量特惠通路</div>
+        <div class="links-container" id="regular-links-area"></div>
 
-        <div class="section-title">🛒 韓國大廠直送好物 (酷澎特惠)</div>
-        <div class="iframe-grid" id="iframe-area">
-            <!-- Coupang iframe 將透過 JS 生成在這裡 -->
-        </div>
+        <!-- 酷澎直立式廣告區 (最多顯示10個) -->
+        <div class="section-title">🛒 韓國大廠直送（酷澎今日嚴選）</div>
+        <div class="iframe-grid" id="iframe-area"></div>
 
         <div class="footer">© 2026 Chloé Select. All Rights Reserved.</div>
     </div>
 
     <script>
-        // 預設資料 (確保第一次打開網頁時不會空空的)
+        // 初始化預設測試資料
         const defaultData = {
-            link1_title: "👉 點我領取美妝專屬 85 折優惠券",
-            link1_url: "https://example.com/discount",
-            link2_title: "🤍 質感真皮包包 (免運賣場)",
-            link2_url: "https://example.com/bag",
-            iframe1_code: `<iframe src="https://coupa.ng/cmWukG" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`,
-            iframe2_code: `` // 預留第二個廣告版位
+            links: [
+                { title: "👉 點我領取美妝專屬 85 折優惠券", url: "https://example.com/discount" },
+                { title: "🤍 質感真皮包包 (免運賣場)", url: "https://example.com/bag" }
+            ],
+            iframes: [
+                `<iframe src="https://coupa.ng/cmWukG" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`
+            ]
         };
 
-        // 讀取並渲染畫面的主函數
         function renderPage() {
-            // 從 localStorage 讀取資料，若無則使用預設值
-            const savedData = JSON.parse(localStorage.getItem('kolSettings')) || defaultData;
+            const savedData = JSON.parse(localStorage.getItem('kolMegaSettings')) || defaultData;
 
-            // 渲染一般連結
+            // 1. 渲染 10 個一般按鈕
             const linksArea = document.getElementById('regular-links-area');
-            linksArea.innerHTML = `
-                <a href="${savedData.link1_url}" target="_blank" class="promo-btn">${savedData.link1_title}</a>
-                <a href="${savedData.link2_url}" target="_blank" class="promo-btn">${savedData.link2_title}</a>
-            `;
+            let linksHTML = '';
+            if (savedData.links && savedData.links.length > 0) {
+                savedData.links.forEach(item => {
+                    if (item.title.trim() !== '' && item.url.trim() !== '') {
+                        linksHTML += `<a href="${item.url}" target="_blank" class="promo-btn">${item.title}</a>`;
+                    }
+                });
+            }
+            linksArea.innerHTML = linksHTML || `<p style="text-align:center; color:#b0a190; font-size:13px;">暫無推薦連結</p>`;
 
-            // 渲染 Coupang Iframe 廣告
+            // 2. 渲染 10 個酷澎 iframe 廣告
             const iframeArea = document.getElementById('iframe-area');
             let iframeHTML = '';
-            
-            if(savedData.iframe1_code.trim() !== '') {
-                iframeHTML += `<div class="iframe-card"><div class="iframe-title">推薦好物 1</div>${savedData.iframe1_code}</div>`;
+            let count = 1;
+            if (savedData.iframes && savedData.iframes.length > 0) {
+                savedData.iframes.forEach(code => {
+                    if (code && code.trim() !== '') {
+                        iframeHTML += `
+                            <div class="iframe-card">
+                                <div class="iframe-title">嚴選好物 ${count}</div>
+                                ${code}
+                            </div>`;
+                        count++;
+                    }
+                });
             }
-            if(savedData.iframe2_code && savedData.iframe2_code.trim() !== '') {
-                iframeHTML += `<div class="iframe-card"><div class="iframe-title">推薦好物 2</div>${savedData.iframe2_code}</div>`;
-            }
-            iframeArea.innerHTML = iframeHTML;
+            iframeArea.innerHTML = iframeHTML || `<p style="text-align:center; color:#b0a190; font-size:13px;">暫無酷澎廣告</p>`;
         }
 
-        // 初次載入時渲染
+        // 執行首次渲染與跨視窗監聽
         renderPage();
-
-        // 監聽其他分頁 (控制頁) 的儲存動作，實現免重整即時更新
         window.addEventListener('storage', function(e) {
-            if (e.key === 'kolSettings') {
-                renderPage();
-            }
+            if (e.key === 'kolMegaSettings') renderPage();
         });
     </script>
 </body>
