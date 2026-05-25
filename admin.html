@@ -3,175 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10大選品版位配置後台</title>
+    <title>極致全功能 4大核心選品控制台</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #1e1e24; color: #fff; padding: 20px;
-        }
-        .admin-container {
-            max-width: 800px; margin: 0 auto;
-            background: #2b2b36; padding: 25px; border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        h1 { font-size: 22px; color: #4ecdc4; margin-bottom: 20px; text-align: center; }
-        .tabs-wrapper {
-            display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #444; padding-bottom: 10px;
-        }
-        .tab-btn {
-            background: #3a3a4a; color: #ccc; border: none; padding: 10px 20px; 
-            border-radius: 6px; cursor: pointer; font-weight: bold;
-        }
-        .tab-btn.active { background: #4ecdc4; color: #111; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #1a1a1f; color: #eee; padding: 20px; }
+        .admin-box { max-width: 800px; margin: 0 auto; background: #25252e; padding: 25px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        h1 { font-size: 20px; color: #c49a70; margin-bottom: 20px; text-align: center; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #3e3e4f; padding-bottom: 10px; flex-wrap: wrap; }
+        .tab-btn { background: #333342; color: #bbb; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; }
+        .tab-btn.active { background: #c49a70; color: #fff; }
         
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
-        .row-card {
-            background: #22222b; padding: 15px; border-radius: 8px; margin-bottom: 15px;
-            border-left: 4px solid #ff6b6b;
-        }
-        .row-card.iframe-style { border-left-color: #4ecdc4; }
-        .row-title { font-size: 14px; font-weight: bold; color: #e0b88d; margin-bottom: 10px; }
         
-        .form-flex { display: flex; gap: 10px; }
-        .form-flex div { flex: 1; }
+        .card { background: #1d1d24; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #c49a70; }
+        .card.js-style { border-left-color: #ff9f1c; }
+        .card-title { font-size: 13px; font-weight: bold; color: #f3ede4; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .card-title span { color: #8a7968; font-size: 11px; }
         
         label { display: block; font-size: 11px; color: #aaa; margin-bottom: 4px; }
-        input[type="text"], input[type="url"], textarea {
-            width: 100%; padding: 8px; background: #15151a;
-            border: 1px solid #444; border-radius: 4px; color: #fff; font-size: 13px;
-        }
-        textarea { height: 60px; font-family: monospace; }
-        input:focus, textarea:focus { outline: none; border-color: #4ecdc4; }
+        input[type="text"], input[type="url"], textarea { width: 100%; padding: 10px; background: #111115; border: 1px solid #3e3e4f; border-radius: 5px; color: #fff; font-size: 13px; }
+        textarea { height: 90px; font-family: monospace; resize: vertical; }
+        input:focus, textarea:focus { outline: none; border-color: #c49a70; }
         
-        .save-bar {
-            position: sticky; bottom: 0; background: #2b2b36; padding: 15px 0 0 0;
-            border-top: 1px solid #444; margin-top: 20px;
-        }
-        .save-btn {
-            display: block; width: 100%; background: #ff6b6b; color: #fff;
-            border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.2s;
-        }
-        .save-btn:hover { background: #ff5252; }
+        .flex-inputs { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+        .flex-inputs div { flex: 1; min-width: 220px; }
         
-        #toast {
-            display: none; background: #4ecdc4; color: #111;
-            padding: 10px; text-align: center; border-radius: 6px; margin-top: 10px; font-weight: bold;
-        }
+        .action-bar { position: sticky; bottom: 0; background: #25252e; padding-top: 15px; border-top: 1px solid #3e3e4f; margin-top: 25px; }
+        .save-btn { display: block; width: 100%; background: #c49a70; color: #fff; border: none; padding: 14px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: center; }
+        .save-btn:hover { background: #b0855b; }
+        #toast { display: none; background: #4caf50; color: #fff; padding: 10px; text-align: center; border-radius: 6px; margin-top: 10px; font-weight: bold; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <div class="admin-container">
-        <h1>⚙️ 10 大選品通路快速控制台</h1>
+    <div class="admin-box">
+        <h1>⚙️ 精選選品平台核心控制中樞</h1>
         
-        <div class="tabs-wrapper">
-            <button class="tab-btn active" onclick="switchTab('tab-links', this)">🔗 10個一般按鈕配置</button>
-            <button class="tab-btn" onclick="switchTab('tab-iframes', this)">🛍️ 10個酷澎廣告配置</button>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('pane-iframe', this)">1. iframe 區 (5筆)</button>
+            <button class="tab-btn" onclick="switchTab('pane-html', this)">2. HTML 區 (5筆)</button>
+            <button class="tab-btn" onclick="switchTab('pane-js', this)">3. JS 廣告區 (5筆)</button>
+            <button class="tab-btn" onclick="switchTab('pane-preview', this)">4. 連結自動預覽 (5筆)</button>
         </div>
 
-        <!-- 頁籤一：10 個按鈕產生器 -->
-        <div id="tab-links" class="tab-content active"></div>
+        <div id="pane-iframe" class="tab-content active"></div>
 
-        <!-- 頁籤二：10 個酷澎廣告產生器 -->
-        <div id="tab-iframes" class="tab-content"></div>
+        <div id="pane-html" class="tab-content"></div>
 
-        <div class="save-bar">
-            <button class="save-btn" onclick="saveMegaSettings()">儲存並發布更新</button>
-            <div id="toast">✅ 成功保存 20 個配置點！請前往主頁查看。</div>
+        <div id="pane-js" class="tab-content"></div>
+
+        <div id="pane-preview" class="tab-content"></div>
+
+        <div class="action-bar">
+            <button class="save-btn" onclick="saveData()">發布全新佈局</button>
+            <div id="toast">發布成功！四大核心區塊已同步上線。</div>
         </div>
     </div>
 
     <script>
-        // 用 JS 自動產生 10 組表單控制項，免去複製貼上之苦
-        const tabLinks = document.getElementById('tab-links');
-        const tabIframes = document.getElementById('tab-iframes');
+        const paneIframe = document.getElementById('pane-iframe');
+        const paneHtml = document.getElementById('pane-html');
+        const paneJs = document.getElementById('pane-js');
+        const panePreview = document.getElementById('pane-preview');
 
-        // 產生 10 個一般按鈕表單
-        for (let i = 1; i <= 10; i++) {
-            tabLinks.innerHTML += `
-                <div class="row-card">
-                    <div class="row-title">位置 #${i} - 一般推薦按鈕</div>
-                    <div class="form-flex">
-                        <div>
-                            <label>按鈕文字：</label>
-                            <input type="text" id="link_title_${i}" placeholder="例如：👉 點我領取優惠">
-                        </div>
-                        <div>
-                            <label>導購網址 (URL)：</label>
-                            <input type="url" id="link_url_${i}" placeholder="https://...">
-                        </div>
+        // 1. 動態生成 5 筆 iframe 欄位
+        for(let i=1; i<=5; i++) {
+            paneIframe.innerHTML += `
+                <div class="card">
+                    <div class="card-title">iframe 欄位 #${i}</div>
+                    <label>請貼上完整的 iframe 嵌入代碼：</label>
+                    <textarea id="if_code_${i}" placeholder="<iframe src='https://...'></iframe>"></textarea>
+                </div>`;
+        }
+
+        // 2. 動態生成 5 筆 HTML 欄位
+        for(let i=1; i<=5; i++) {
+            paneHtml.innerHTML += `
+                <div class="card">
+                    <div class="card-title">HTML / 廣告活動看板 #${i}</div>
+                    <label>自訂 HTML 代碼或活動圖片超連結：</label>
+                    <textarea id="html_code_${i}" placeholder="<a href='...'><img src='...' /></a>"></textarea>
+                </div>`;
+        }
+
+        // 3. 動態生成 5 筆 JS 廣告區欄位 (安全轉義 placeholder 防止瀏覽器解析錯誤)
+        for(let i=1; i<=5; i++) {
+            paneJs.innerHTML += `
+                <div class="card js-style">
+                    <div class="card-title">JS 廣告活動看板 #${i}</div>
+                    <label>請貼上包含 &lt;script&gt; 標籤的動態廣告原始碼：</label>
+                    <textarea id="js_code_${i}" placeholder="&lt;script src='https://ads-partners.tw.coupang.com/g.js'&gt;&lt;/script&gt;&#10;&lt;script&gt;&#10;  new PartnersCoupang.G({'id':201,'template':'banner'});&#10;&lt;/script&gt;"></textarea>
+                </div>`;
+        }
+
+        // 4. 動態生成 5 筆 智慧連結欄位
+        for(let i=1; i<=5; i++) {
+            panePreview.innerHTML += `
+                <div class="card">
+                    <div class="card-title">智慧連結預覽卡片 #${i}</div>
+                    <div><label>導購連結網址 (URL)：</label><input type="url" id="pv_url_${i}" placeholder="https://coupa.ng/..."></div>
+                    <div class="flex-inputs">
+                        <div><label>商品名稱 / 預覽標題：</label><input type="text" id="pv_title_${i}" placeholder="請輸入商品顯示名稱"></div>
+                        <div><label>商品圖片網址 (URL)：</label><input type="url" id="pv_img_${i}" placeholder="https://..."></div>
                     </div>
                 </div>`;
         }
 
-        // 產生 10 個 Iframe 表單
-        for (let i = 1; i <= 10; i++) {
-            tabIframes.innerHTML += `
-                <div class="row-card iframe-style">
-                    <div class="row-title">位置 #${i} - 酷澎廣告展示區</div>
-                    <label>請貼上酷澎完整廣告代碼 (&lt;iframe ...&gt;&lt;/iframe&gt;)：</label>
-                    <textarea id="iframe_code_${i}" placeholder="請貼上寬120 x 高240 的酷澎廣告代碼..."></textarea>
-                </div>`;
-        }
-
         // 頁籤切換邏輯
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             btn.classList.add('active');
         }
 
-        // 預設資料
-        const defaultData = {
-            links: [
-                { title: "👉 點我領取美妝專屬 85 折優惠券", url: "https://example.com/discount" },
-                { title: "🤍 質感真皮包包 (免運賣場)", url: "https://example.com/bag" }
-            ],
-            iframes: [
-                `<iframe src="https://coupa.ng/cmWukG" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`
-            ]
-        };
+        // 安全讀取資料 (修復無法正確清空欄位的 Bug)
+        function loadData() {
+            const saved = JSON.parse(localStorage.getItem('kolFourBlocksSettings'));
+            if(!saved) return;
 
-        // 讀取並還原資料到 20 個表單欄位中
-        function loadMegaSettings() {
-            const savedData = JSON.parse(localStorage.getItem('kolMegaSettings')) || defaultData;
-            
-            for (let i = 1; i <= 10; i++) {
-                const linkData = savedData.links && savedData.links[i-1] ? savedData.links[i-1] : { title: '', url: '' };
-                document.getElementById(`link_title_${i}`).value = linkData.title || '';
-                document.getElementById(`link_url_${i}`).value = linkData.url || '';
+            for(let i=1; i<=5; i++) {
+                document.getElementById(`if_code_${i}`).value = (saved.iframes && saved.iframes[i-1] !== undefined) ? saved.iframes[i-1] : '';
+                document.getElementById(`html_code_${i}`).value = (saved.htmls && saved.htmls[i-1] !== undefined) ? saved.htmls[i-1] : '';
+                document.getElementById(`js_code_${i}`).value = (saved.jsAds && saved.jsAds[i-1] !== undefined) ? saved.jsAds[i-1] : '';
                 
-                const iframeCode = savedData.iframes && savedData.iframes[i-1] ? savedData.iframes[i-1] : '';
-                document.getElementById(`iframe_code_${i}`).value = iframeCode || '';
+                if(saved.links && saved.links[i-1]) {
+                    document.getElementById(`pv_url_${i}`).value = saved.links[i-1].url || '';
+                    document.getElementById(`pv_title_${i}`).value = saved.links[i-1].title || '';
+                    document.getElementById(`pv_img_${i}`).value = saved.links[i-1].img || '';
+                } else {
+                    document.getElementById(`pv_url_${i}`).value = '';
+                    document.getElementById(`pv_title_${i}`).value = '';
+                    document.getElementById(`pv_img_${i}`).value = '';
+                }
             }
         }
 
-        // 收集 20 個欄位打包存進儲存庫
-        function saveMegaSettings() {
-            const linksArray = [];
-            const iframesArray = [];
+        // 儲存資料邏輯
+        function saveData() {
+            const iframes = [];
+            const htmls = [];
+            const jsAds = [];
+            const links = [];
 
-            for (let i = 1; i <= 10; i++) {
-                linksArray.push({
-                    title: document.getElementById(`link_title_${i}`).value,
-                    url: document.getElementById(`link_url_${i}`).value
+            for(let i=1; i<=5; i++) {
+                iframes.push(document.getElementById(`if_code_${i}`).value.trim());
+                htmls.push(document.getElementById(`html_code_${i}`).value.trim());
+                jsAds.push(document.getElementById(`js_code_${i}`).value.trim());
+                links.push({
+                    url: document.getElementById(`pv_url_${i}`).value.trim(),
+                    title: document.getElementById(`pv_title_${i}`).value.trim(),
+                    img: document.getElementById(`pv_img_${i}`).value.trim()
                 });
-                iframesArray.push(document.getElementById(`iframe_code_${i}`).value);
             }
 
-            const megaData = { links: linksArray, iframes: iframesArray };
-            localStorage.setItem('kolMegaSettings', JSON.stringify(megaData));
-
+            localStorage.setItem('kolFourBlocksSettings', JSON.stringify({ iframes, htmls, jsAds, links }));
+            
             const toast = document.getElementById('toast');
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            setTimeout(() => toast.style.display = 'none', 3000);
         }
 
-        window.onload = loadMegaSettings;
+        // 初始化
+        window.onload = loadData;
     </script>
 </body>
 </html>

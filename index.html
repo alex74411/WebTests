@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chloé 柯蕾 - 精選美學選品店</title>
+    <title>Chloé 柯蕾 - 精選選品店</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -11,152 +11,303 @@
             color: #4a3f35;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+        
+        /* 主區域最大寬度 770px */
         .container {
-            max-width: 480px;
+            width: 100%;
+            max-width: 770px; 
             margin: 0 auto;
             background-color: #ffffff;
             min-height: 100vh;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
             padding-bottom: 40px;
         }
+        
         .header {
             text-align: center;
             padding: 40px 20px 20px;
             background: linear-gradient(180deg, #f3ede4 0%, #ffffff 100%);
         }
         .avatar {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
+            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+            border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px;
         }
         .name { font-size: 20px; font-weight: bold; color: #2b231c; }
         .bio { font-size: 13px; color: #8a7968; margin-top: 5px; }
         
+        /* 大區塊標題 */
         .section-title {
-            font-size: 15px; font-weight: 600;
-            padding-left: 15px; border-left: 4px solid #c49a70;
-            margin: 25px 20px 15px;
+            font-size: 15px; font-weight: 600; padding-left: 15px;
+            border-left: 4px solid #c49a70; margin: 30px 20px 15px;
         }
 
-        /* 10個一般連結按鈕區區 */
-        .links-container { padding: 0 20px; }
-        .promo-btn {
-            display: block;
-            width: 100%;
-            background: #2b231c;
-            color: #fff;
-            text-align: center;
-            padding: 14px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 12px;
-            transition: 0.2s;
-            font-size: 14px;
+        /* 配置來源標題樣式 */
+        .item-slot-title {
+            font-size: 11px; font-weight: bold; color: #c49a70;
+            margin-bottom: 8px; letter-spacing: 0.5px; width: 100%;
+            text-align: left; border-bottom: 1px dashed #f3ede4; padding-bottom: 4px;
         }
-        .promo-btn:hover { background: #4a3f35; }
 
-        /* 10個酷澎廣告網格區區 */
-        .iframe-grid {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding: 0 20px;
-            flex-wrap: wrap;
-        }
+        /* 🛠️ 區塊一：iframe 區 (全面重構：移除 Flex 佈局，改用最穩定 Block 佈局防止點擊錯位) */
+        .iframe-stream { display: flex; flex-direction: column; gap: 20px; padding: 0 20px; }
         .iframe-card {
-            background: #fff;
-            border: 1px solid #f3ede4;
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
+            background: #fff; border: 1px solid #ebdcd0; border-radius: 12px;
+            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
+            width: 100%; 
+            display: block; /* ✨ 關鍵修復：改回 block 確保滑鼠事件精準傳遞 */
+            text-align: center;
         }
-        .iframe-title {
-            font-size: 11px;
-            color: #b0a190;
-            margin-bottom: 8px;
-            font-weight: 500;
+        .iframe-card iframe { 
+            border-radius: 8px; margin: 10px auto 0; 
+            display: block; /* ✨ 關鍵修復：利用 block + margin auto 置中，不與 browser 點擊地圖衝突 */
+            max-width: none !important; 
+            position: relative;
+            z-index: 5; /* ✨ 確保權重在最上層 */
         }
-        .footer { text-align: center; font-size: 11px; color: #b0a190; margin-top: 40px; }
+
+        /* 區塊二：純 HTML 區 */
+        .html-container { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+        .html-wrapper-card {
+            background: #ffffff; border: 1px solid #ebdcd0; border-radius: 12px;
+            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
+            width: 100%; display: flex; flex-direction: column;
+        }
+        .html-card { width: 100%; display: block; margin-top: 5px; }
+        .html-card img, .html-card iframe { max-width: 100% !important; height: auto !important; border-radius: 8px; }
+
+        /* 🛠️ 區塊三：JS 廣告代碼區 (同步改用最安全 Block 置中) */
+        .js-container { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+        .js-wrapper-card {
+            background: #ffffff; border: 1px solid #ebdcd0; border-radius: 12px;
+            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
+            width: 100%; 
+            display: block;
+            text-align: center;
+        }
+        .js-card { width: 100%; display: block; }
+        .js-card iframe { 
+            position: relative; 
+            z-index: 5; 
+            margin: 0 auto; 
+        }
+
+        /* 區塊四：連結自動預覽牆 */
+        .preview-container { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+        .preview-wrapper {
+            background: #ffffff; border: 1px solid #ebdcd0; border-radius: 12px;
+            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02); display: flex; flex-direction: column;
+        }
+        .preview-card {
+            display: flex; background: #faf6f0; border-radius: 10px; overflow: hidden; 
+            text-decoration: none; margin-top: 5px; border: 1px solid #f3ede4;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .preview-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(196, 154, 112, 0.12); }
+        .preview-img { width: 100px; min-width: 100px; height: 100px; background: #fff; }
+        .preview-img img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-content { padding: 12px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; min-width: 0; }
+        .preview-title { font-size: 13px; font-weight: bold; color: #2b231c; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .preview-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+        .preview-domain { font-size: 11px; color: #b0a190; font-family: monospace; }
+        .preview-btn { font-size: 10px; background: #c49a70; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+
+        .footer { text-align: center; font-size: 11px; color: #b0a190; margin-top: 50px; }
+        .empty-hint { text-align: center; color: #b0a190; font-size: 12px; padding: 15px; width: 100%; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80" class="avatar" alt="KOL Avatar">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80" class="avatar" alt="Avatar">
             <div class="name">Chloé 柯蕾 ✨</div>
-            <div class="bio">歡迎來到我的選品空間！下方為大家整理了 10 大推薦連結與酷澎直送好物。</div>
+            <div class="bio">歡迎來到我的美學選品空間！版面佈局最佳化已全面對齊。</div>
         </div>
 
-        <!-- 一般限時特惠連結區 (最多顯示10個) -->
-        <div class="section-title">🔥 粉絲獨家限量特惠通路</div>
-        <div class="links-container" id="regular-links-area"></div>
+        <div class="section-title">🛒 酷澎嚴選動態組件</div>
+        <div class="iframe-stream" id="main-iframe-area"></div>
 
-        <!-- 酷澎直立式廣告區 (最多顯示10個) -->
-        <div class="section-title">🛒 韓國大廠直送（酷澎今日嚴選）</div>
-        <div class="iframe-grid" id="iframe-area"></div>
+        <div class="section-title">🖼️ 限時聯名特別企劃</div>
+        <div class="html-container" id="main-html-area"></div>
+
+        <div class="section-title">⚡ 智慧型 JS 動態廣告看板</div>
+        <div class="js-container" id="main-js-area"></div>
+
+        <div class="section-title">🛍️ 今日爆款推薦連結</div>
+        <div class="preview-container" id="main-preview-area"></div>
 
         <div class="footer">© 2026 Chloé Select. All Rights Reserved.</div>
     </div>
 
     <script>
-        // 初始化預設測試資料
+        // 初始化預設資料
         const defaultData = {
-            links: [
-                { title: "👉 點我領取美妝專屬 85 折優惠券", url: "https://example.com/discount" },
-                { title: "🤍 質感真皮包包 (免運賣場)", url: "https://example.com/bag" }
-            ],
-            iframes: [
-                `<iframe src="https://coupa.ng/cmWukG" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`
-            ]
+            iframes: [`<iframe src="https://ads-partners.tw.coupang.com/widgets.html?id=201&template=banner&trackingCode=AF6553800&subId=&width=728&height=90" width="728" height="90" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>`],
+            htmls: [`<a href="https://coupa.ng/cm2mcA" target="_blank"><img src="https://ads-partners.tw.coupang.com/banners/193?w=600&h=900" style="width:100%"></a>`],
+            jsAds: [`<script src="https://ads-partners.tw.coupang.com/g.js"><\/script>\n<script>\n\tnew PartnersCoupang.G({"id":201,"template":"banner","trackingCode":"AF6553800","width":"728","height":"90"});\n<\/script>`],
+            links: [{
+                url: "https://coupa.ng/cm4hWS",
+                title: "🔥 酷澎爆款：韓系保濕亮白防曬乳液 (SPF50+)",
+                img: "https://images.unsplash.com/photo-1556229174-5e42a09e45af?w=200"
+            }]
         };
 
-        function renderPage() {
-            const savedData = JSON.parse(localStorage.getItem('kolMegaSettings')) || defaultData;
+        function executeScripts(target, code) {
+            target.innerHTML = code;
+            Array.from(target.querySelectorAll("script")).forEach(oldScript => {
+                const newScript = document.createElement("script");
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        }
 
-            // 1. 渲染 10 個一般按鈕
-            const linksArea = document.getElementById('regular-links-area');
-            let linksHTML = '';
-            if (savedData.links && savedData.links.length > 0) {
-                savedData.links.forEach(item => {
-                    if (item.title.trim() !== '' && item.url.trim() !== '') {
-                        linksHTML += `<a href="${item.url}" target="_blank" class="promo-btn">${item.title}</a>`;
-                    }
-                });
+        function executeJSBlock(target, code) {
+            target.innerHTML = ''; 
+            if (!code || code.trim() === '') return;
+
+            const iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = '90px'; 
+            iframe.style.border = 'none';
+            iframe.style.overflow = 'hidden';
+            iframe.style.display = 'block';
+            iframe.style.margin = '0 auto';
+
+            if (code.includes('728') || code.includes('"width":"728"')) {
+                iframe.style.width = '728px';
             }
-            linksArea.innerHTML = linksHTML || `<p style="text-align:center; color:#b0a190; font-size:13px;">暫無推薦連結</p>`;
 
-            // 2. 渲染 10 個酷澎 iframe 廣告
-            const iframeArea = document.getElementById('iframe-area');
+            target.appendChild(iframe);
+
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { margin: 0; padding: 0; background: transparent; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+                        iframe, img { max-width: none !important; }
+                    </style>
+                </head>
+                <body>
+                    ${code}
+                    <script>
+                        function autoResize() {
+                            try {
+                                const scrollHeight = document.body.scrollHeight || document.documentElement.scrollHeight;
+                                if (scrollHeight > 10) {
+                                    window.frameElement.style.height = scrollHeight + 'px';
+                                }
+                            } catch(e) {}
+                        }
+                        window.onload = function() { setTimeout(autoResize, 250); };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            doc.close();
+        }
+
+        function renderEngine() {
+            const data = JSON.parse(localStorage.getItem('kolFourBlocksSettings')) || defaultData;
+
+            // 1. 渲染 iframe 區
+            const iframeArea = document.getElementById('main-iframe-area');
             let iframeHTML = '';
-            let count = 1;
-            if (savedData.iframes && savedData.iframes.length > 0) {
-                savedData.iframes.forEach(code => {
+            if (data.iframes && data.iframes.some(c => c.trim() !== '')) {
+                data.iframes.forEach((code, idx) => {
                     if (code && code.trim() !== '') {
                         iframeHTML += `
                             <div class="iframe-card">
-                                <div class="iframe-title">嚴選好物 ${count}</div>
+                                <div class="item-slot-title">iframe 欄位 #${idx + 1}</div>
                                 ${code}
                             </div>`;
-                        count++;
                     }
                 });
+                iframeArea.innerHTML = iframeHTML;
+            } else {
+                iframeArea.innerHTML = `<p class="empty-hint">暫無 iframe 組件</p>`;
             }
-            iframeArea.innerHTML = iframeHTML || `<p style="text-align:center; color:#b0a190; font-size:13px;">暫無酷澎廣告</p>`;
+
+            // 2. 渲染 HTML 區
+            const htmlArea = document.getElementById('main-html-area');
+            htmlArea.innerHTML = '';
+            if (data.htmls && data.htmls.some(c => c.trim() !== '')) {
+                data.htmls.forEach((code, idx) => {
+                    if (code && code.trim() !== '') {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'html-wrapper-card';
+                        wrapper.innerHTML = `
+                            <div class="item-slot-title">HTML / 廣告活動看板 #${idx + 1}</div>
+                            <div class="html-card" id="html-slot-${idx}"></div>
+                        `;
+                        htmlArea.appendChild(wrapper);
+                        executeScripts(document.getElementById(`html-slot-${idx}`), code);
+                    }
+                });
+            } else {
+                htmlArea.innerHTML = `<p class="empty-hint">暫無自訂 HTML 內容</p>`;
+            }
+
+            // 3. 渲染 JS 廣告區
+            const jsArea = document.getElementById('main-js-area');
+            jsArea.innerHTML = '';
+            if (data.jsAds && data.jsAds.some(c => c.trim() !== '')) {
+                data.jsAds.forEach((code, idx) => {
+                    if (code && code.trim() !== '') {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'js-wrapper-card';
+                        wrapper.innerHTML = `
+                            <div class="item-slot-title">JS 廣告活動看板 #${idx + 1}</div>
+                            <div class="js-card" id="js-slot-${idx}"></div>
+                        `;
+                        jsArea.appendChild(wrapper);
+                        executeJSBlock(document.getElementById(`js-slot-${idx}`), code);
+                    }
+                });
+            } else {
+                jsArea.innerHTML = `<p class="empty-hint">暫無 JS 動態廣告</p>`;
+            }
+
+            // 4. 渲染 智慧連結預覽區
+            const previewArea = document.getElementById('main-preview-area');
+            let previewHTML = '';
+            if (data.links && data.links.some(item => item && item.url && item.url.trim() !== '')) {
+                data.links.forEach((item, idx) => {
+                    if (item && item.url && item.url.trim() !== '') {
+                        const title = item.title.trim() || "點擊前往精選好物商品頁面";
+                        const img = item.img.trim() || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200";
+                        let domain = "coupa.ng";
+                        try { if(item.url.includes('//')) domain = item.url.split('/')[2]; } catch(e){}
+
+                        previewHTML += `
+                            <div class="preview-wrapper">
+                                <div class="item-slot-title">智慧連結預覽卡片 #${idx + 1}</div>
+                                <a href="${item.url}" target="_blank" class="preview-card">
+                                    <div class="preview-img"><img src="${img}" alt="Preview"></div>
+                                    <div class="preview-content">
+                                        <div class="preview-title">${title}</div>
+                                        <div class="preview-meta">
+                                            <span class="preview-domain">${domain}</span>
+                                            <span class="preview-btn">查看詳情</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>`;
+                    }
+                });
+                previewArea.innerHTML = previewHTML;
+            } else {
+                previewArea.innerHTML = `<p class="empty-hint">暫無推薦商品連結</p>`;
+            }
         }
 
-        // 執行首次渲染與跨視窗監聽
-        renderPage();
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'kolMegaSettings') renderPage();
+        renderEngine();
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'kolFourBlocksSettings') renderEngine();
         });
     </script>
 </body>
