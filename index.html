@@ -48,55 +48,28 @@
             text-align: left; border-bottom: 1px dashed #f3ede4; padding-bottom: 4px;
         }
 
-        /* 🛠️ 區塊一：iframe 區 (全面重構：移除 Flex 佈局，改用最穩定 Block 佈局防止點擊錯位) */
-        .iframe-stream { display: flex; flex-direction: column; gap: 20px; padding: 0 20px; }
-        .iframe-card {
+        /* 統一卡片樣式：加入 position: relative 與 z-index 隔離，防止卡片互相堆疊覆蓋點擊點 */
+        .iframe-card, .html-wrapper-card, .js-wrapper-card, .preview-wrapper {
             background: #fff; border: 1px solid #ebdcd0; border-radius: 12px;
             padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
-            width: 100%; 
-            display: block; /* ✨ 關鍵修復：改回 block 確保滑鼠事件精準傳遞 */
-            text-align: center;
+            width: 100%; display: block; text-align: center;
+            position: relative; z-index: 1; overflow: visible; margin-bottom: 20px;
         }
-        .iframe-card iframe { 
-            border-radius: 8px; margin: 10px auto 0; 
-            display: block; /* ✨ 關鍵修復：利用 block + margin auto 置中，不與 browser 點擊地圖衝突 */
-            max-width: none !important; 
-            position: relative;
-            z-index: 5; /* ✨ 確保權重在最上層 */
+
+        .iframe-stream, .html-container, .js-container, .preview-container { 
+            padding: 0 20px; display: block; 
+        }
+
+        .iframe-card iframe, .js-card iframe { 
+            border-radius: 8px; margin: 10px auto 0; display: block;
+            max-width: none !important; position: relative; z-index: 5;
         }
 
         /* 區塊二：純 HTML 區 */
-        .html-container { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-        .html-wrapper-card {
-            background: #ffffff; border: 1px solid #ebdcd0; border-radius: 12px;
-            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
-            width: 100%; display: flex; flex-direction: column;
-        }
         .html-card { width: 100%; display: block; margin-top: 5px; }
         .html-card img, .html-card iframe { max-width: 100% !important; height: auto !important; border-radius: 8px; }
 
-        /* 🛠️ 區塊三：JS 廣告代碼區 (同步改用最安全 Block 置中) */
-        .js-container { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-        .js-wrapper-card {
-            background: #ffffff; border: 1px solid #ebdcd0; border-radius: 12px;
-            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
-            width: 100%; 
-            display: block;
-            text-align: center;
-        }
-        .js-card { width: 100%; display: block; }
-        .js-card iframe { 
-            position: relative; 
-            z-index: 5; 
-            margin: 0 auto; 
-        }
-
         /* 區塊四：連結自動預覽牆 */
-        .preview-container { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-        .preview-wrapper {
-            background: #ffffff; border: 1px solid #ebdcd0; border-radius: 12px;
-            padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02); display: flex; flex-direction: column;
-        }
         .preview-card {
             display: flex; background: #faf6f0; border-radius: 10px; overflow: hidden; 
             text-decoration: none; margin-top: 5px; border: 1px solid #f3ede4;
@@ -111,7 +84,7 @@
         .preview-domain { font-size: 11px; color: #b0a190; font-family: monospace; }
         .preview-btn { font-size: 10px; background: #c49a70; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
 
-        .footer { text-align: center; font-size: 11px; color: #b0a190; margin-top: 50px; }
+        .footer { text-align: center; font-size: 11px; color: #b0a190; margin-top: 50px; padding-bottom: 20px; }
         .empty-hint { text-align: center; color: #b0a190; font-size: 12px; padding: 15px; width: 100%; }
     </style>
 </head>
@@ -121,7 +94,7 @@
         <div class="header">
             <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80" class="avatar" alt="Avatar">
             <div class="name">Chloé 柯蕾 ✨</div>
-            <div class="bio">歡迎來到我的美學選品空間！版面佈局最佳化已全面對齊。</div>
+            <div class="bio">歡迎來到我的美學選品空間！動態智慧引擎已全面修復。</div>
         </div>
 
         <div class="section-title">🛒 酷澎嚴選動態組件</div>
@@ -162,21 +135,29 @@
             });
         }
 
+        // 🛠️ 升級版安全沙盒：配備智慧尺寸預判與多重頻率非同步高度監聽器
         function executeJSBlock(target, code) {
             target.innerHTML = ''; 
             if (!code || code.trim() === '') return;
 
+            // 1. 智慧尺寸預判：精準從程式碼文字中撈取寬高，防止初始崩塌
+            let initialWidth = '100%';
+            let initialHeight = '90px'; 
+            const wMatch = code.match(/width=["']?(\d+)(px|%)?["']?/i) || code.match(/"width"\s*:\s*["']?(\d+)["']?/i);
+            if (wMatch) initialWidth = wMatch[1] + (wMatch[2] || 'px');
+            else if (code.includes('728')) initialWidth = '728px';
+
+            const hMatch = code.match(/height=["']?(\d+)(px|%)?["']?/i) || code.match(/"height"\s*:\s*["']?(\d+)["']?/i);
+            if (hMatch) initialHeight = hMatch[1] + 'px';
+
             const iframe = document.createElement('iframe');
-            iframe.style.width = '100%';
-            iframe.style.height = '90px'; 
+            iframe.style.width = initialWidth;
+            iframe.style.height = initialHeight; 
             iframe.style.border = 'none';
             iframe.style.overflow = 'hidden';
             iframe.style.display = 'block';
             iframe.style.margin = '0 auto';
-
-            if (code.includes('728') || code.includes('"width":"728"')) {
-                iframe.style.width = '728px';
-            }
+            iframe.setAttribute('scrolling', 'no');
 
             target.appendChild(iframe);
 
@@ -188,22 +169,45 @@
                 <head>
                     <meta charset="UTF-8">
                     <style>
-                        body { margin: 0; padding: 0; background: transparent; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+                        /* 移除 Flex 佈局防止點擊座標錯位，改用老實穩固的 block 居中 */
+                        body { margin: 0; padding: 0; background: transparent; text-align: center; display: block; overflow: hidden; }
                         iframe, img { max-width: none !important; }
                     </style>
                 </head>
                 <body>
-                    ${code}
+                    <div id="ad-wrapper" style="display: inline-block; min-width: 10px; min-height: 10px;">
+                        ${code}
+                    </div>
                     <script>
-                        function autoResize() {
+                        function notifyResize() {
                             try {
-                                const scrollHeight = document.body.scrollHeight || document.documentElement.scrollHeight;
-                                if (scrollHeight > 10) {
-                                    window.frameElement.style.height = scrollHeight + 'px';
+                                const wrapper = document.getElementById('ad-wrapper');
+                                const currentHeight = Math.max(
+                                    document.body.scrollHeight, 
+                                    document.documentElement.scrollHeight,
+                                    wrapper ? wrapper.offsetHeight : 0
+                                );
+                                if (currentHeight > 10) {
+                                    // 多給 4px 安全裕度防止出現滾動條或邊緣裁切
+                                    window.frameElement.style.height = (currentHeight + 4) + 'px';
                                 }
                             } catch(e) {}
                         }
-                        window.onload = function() { setTimeout(autoResize, 250); };
+                        // 核心修復：廣告異步加載完需要時間，前5秒每300毫秒強制重新計算，消滅卡片重疊
+                        window.onload = function() {
+                            notifyResize();
+                            let count = 0;
+                            const interval = setInterval(() => {
+                                notifyResize();
+                                count++;
+                                if (count > 15) clearInterval(interval);
+                            }, 300);
+                        };
+                        // 現代瀏覽器監聽：只要廣告高度一有變動立刻撐開父層
+                        if (window.ResizeObserver) {
+                            const observer = new ResizeObserver(() => notifyResize());
+                            observer.observe(document.body);
+                        }
                     <\/script>
                 </body>
                 </html>
@@ -216,18 +220,35 @@
 
             // 1. 渲染 iframe 區
             const iframeArea = document.getElementById('main-iframe-area');
-            let iframeHTML = '';
+            iframeArea.innerHTML = '';
             if (data.iframes && data.iframes.some(c => c.trim() !== '')) {
                 data.iframes.forEach((code, idx) => {
                     if (code && code.trim() !== '') {
-                        iframeHTML += `
-                            <div class="iframe-card">
-                                <div class="item-slot-title">iframe 欄位 #${idx + 1}</div>
-                                ${code}
-                            </div>`;
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'iframe-card';
+                        wrapper.innerHTML = `
+                            <div class="item-slot-title">iframe 欄位 #${idx + 1}</div>
+                            <div id="iframe-slot-${idx}" style="width:100%;"></div>
+                        `;
+                        iframeArea.appendChild(wrapper);
+                        
+                        const slotTarget = document.getElementById(`iframe-slot-${idx}`);
+                        // 🛠️ 智慧容錯：如果使用者不小心把 JS 代碼貼到了 iframe 區，自動啟動 JS 沙盒引擎執行
+                        if (code.includes('<script') || !code.includes('<iframe')) {
+                            executeJSBlock(slotTarget, code);
+                        } else {
+                            slotTarget.innerHTML = code;
+                            const innerIframe = slotTarget.querySelector('iframe');
+                            if (innerIframe) {
+                                innerIframe.style.maxWidth = 'none';
+                                innerIframe.style.display = 'block';
+                                innerIframe.style.margin = '0 auto';
+                                innerIframe.style.position = 'relative';
+                                innerIframe.style.zIndex = '5';
+                            }
+                        }
                     }
                 });
-                iframeArea.innerHTML = iframeHTML;
             } else {
                 iframeArea.innerHTML = `<p class="empty-hint">暫無 iframe 組件</p>`;
             }
@@ -265,7 +286,20 @@
                             <div class="js-card" id="js-slot-${idx}"></div>
                         `;
                         jsArea.appendChild(wrapper);
-                        executeJSBlock(document.getElementById(`js-slot-${idx}`), code);
+                        
+                        const slotTarget = document.getElementById(`js-slot-${idx}`);
+                        // 🛠️ 智慧容錯：如果使用者把純 iframe 貼到了 JS 區，直接做降級純 HTML 處理
+                        if (code.includes('<iframe') && !code.includes('<script')) {
+                            slotTarget.innerHTML = code;
+                            const innerIframe = slotTarget.querySelector('iframe');
+                            if (innerIframe) {
+                                innerIframe.style.maxWidth = 'none';
+                                innerIframe.style.display = 'block';
+                                innerIframe.style.margin = '0 auto';
+                            }
+                        } else {
+                            executeJSBlock(slotTarget, code);
+                        }
                     }
                 });
             } else {
