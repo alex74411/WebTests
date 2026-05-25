@@ -48,20 +48,23 @@
             text-align: left; border-bottom: 1px dashed #f3ede4; padding-bottom: 4px;
         }
 
-        /* 統一卡片樣式：加入 position: relative 與 z-index 隔離，防止卡片互相堆疊覆蓋點擊點 */
+        /* 統一卡片外觀 */
+        /* ✨ 關鍵修復：加入 overflow-x: auto; 當廣告大於卡片寬度時，允許橫向滾動瀏覽，絕不裁切或擠壓廣告 */
         .iframe-card, .html-wrapper-card, .js-wrapper-card, .preview-wrapper {
             background: #fff; border: 1px solid #ebdcd0; border-radius: 12px;
             padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
             width: 100%; display: block; text-align: center;
-            position: relative; z-index: 1; overflow: visible; margin-bottom: 20px;
+            position: relative; z-index: 1; overflow-x: auto; margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .iframe-stream, .html-container, .js-container, .preview-container { 
             padding: 0 20px; display: block; 
         }
 
+        /* 讓內部沙盒外框與廣告本體精準對齊，層級提至最上方 */
         .iframe-card iframe, .js-card iframe { 
-            border-radius: 8px; margin: 10px auto 0; display: block;
+            border-radius: 8px; margin: 5px auto 0; display: block;
             max-width: none !important; position: relative; z-index: 5;
         }
 
@@ -135,14 +138,15 @@
             });
         }
 
-        // 🛠️ 升級版安全沙盒：配備智慧尺寸預判與多重頻率非同步高度監聽器
-        function executeJSBlock(target, code) {
+        // 🛠️ 終極智慧沙盒：同時支援 JS 腳本與純 iframe 代碼的載入與高頻高度追蹤
+        function executeAdSandbox(target, code) {
             target.innerHTML = ''; 
             if (!code || code.trim() === '') return;
 
-            // 1. 智慧尺寸預判：精準從程式碼文字中撈取寬高，防止初始崩塌
+            // 1. 智慧尺寸提取與解析
             let initialWidth = '100%';
             let initialHeight = '90px'; 
+            
             const wMatch = code.match(/width=["']?(\d+)(px|%)?["']?/i) || code.match(/"width"\s*:\s*["']?(\d+)["']?/i);
             if (wMatch) initialWidth = wMatch[1] + (wMatch[2] || 'px');
             else if (code.includes('728')) initialWidth = '728px';
@@ -150,18 +154,20 @@
             const hMatch = code.match(/height=["']?(\d+)(px|%)?["']?/i) || code.match(/"height"\s*:\s*["']?(\d+)["']?/i);
             if (hMatch) initialHeight = hMatch[1] + 'px';
 
-            const iframe = document.createElement('iframe');
-            iframe.style.width = initialWidth;
-            iframe.style.height = initialHeight; 
-            iframe.style.border = 'none';
-            iframe.style.overflow = 'hidden';
-            iframe.style.display = 'block';
-            iframe.style.margin = '0 auto';
-            iframe.setAttribute('scrolling', 'no');
+            // 2. 建立一級隔離沙盒外殼
+            const sandboxIframe = document.createElement('iframe');
+            sandboxIframe.style.width = initialWidth;
+            sandboxIframe.style.height = initialHeight; 
+            sandboxIframe.style.border = 'none';
+            sandboxIframe.style.overflow = 'hidden';
+            sandboxIframe.style.display = 'block';
+            sandboxIframe.style.margin = '0 auto';
+            sandboxIframe.setAttribute('scrolling', 'no');
 
-            target.appendChild(iframe);
+            target.appendChild(sandboxIframe);
 
-            const doc = iframe.contentWindow.document;
+            // 3. 寫入獨立上下文，繞過主網域動態寫入安全限制
+            const doc = sandboxIframe.contentWindow.document;
             doc.open();
             doc.write(`
                 <!DOCTYPE html>
@@ -169,7 +175,6 @@
                 <head>
                     <meta charset="UTF-8">
                     <style>
-                        /* 移除 Flex 佈局防止點擊座標錯位，改用老實穩固的 block 居中 */
                         body { margin: 0; padding: 0; background: transparent; text-align: center; display: block; overflow: hidden; }
                         iframe, img { max-width: none !important; }
                     </style>
@@ -188,12 +193,11 @@
                                     wrapper ? wrapper.offsetHeight : 0
                                 );
                                 if (currentHeight > 10) {
-                                    // 多給 4px 安全裕度防止出現滾動條或邊緣裁切
                                     window.frameElement.style.height = (currentHeight + 4) + 'px';
                                 }
                             } catch(e) {}
                         }
-                        // 核心修復：廣告異步加載完需要時間，前5秒每300毫秒強制重新計算，消滅卡片重疊
+                        // 針對動態非同步加載的廣告，前 5 秒進行高頻追蹤，防止卡片高度重疊
                         window.onload = function() {
                             notifyResize();
                             let count = 0;
@@ -203,7 +207,6 @@
                                 if (count > 15) clearInterval(interval);
                             }, 300);
                         };
-                        // 現代瀏覽器監聽：只要廣告高度一有變動立刻撐開父層
                         if (window.ResizeObserver) {
                             const observer = new ResizeObserver(() => notifyResize());
                             observer.observe(document.body);
@@ -218,7 +221,7 @@
         function renderEngine() {
             const data = JSON.parse(localStorage.getItem('kolFourBlocksSettings')) || defaultData;
 
-            // 1. 渲染 iframe 區
+            // 1. 🛒 渲染 iframe 區（升級：一律導入智慧沙盒引擎）
             const iframeArea = document.getElementById('main-iframe-area');
             iframeArea.innerHTML = '';
             if (data.iframes && data.iframes.some(c => c.trim() !== '')) {
@@ -232,28 +235,15 @@
                         `;
                         iframeArea.appendChild(wrapper);
                         
-                        const slotTarget = document.getElementById(`iframe-slot-${idx}`);
-                        // 🛠️ 智慧容錯：如果使用者不小心把 JS 代碼貼到了 iframe 區，自動啟動 JS 沙盒引擎執行
-                        if (code.includes('<script') || !code.includes('<iframe')) {
-                            executeJSBlock(slotTarget, code);
-                        } else {
-                            slotTarget.innerHTML = code;
-                            const innerIframe = slotTarget.querySelector('iframe');
-                            if (innerIframe) {
-                                innerIframe.style.maxWidth = 'none';
-                                innerIframe.style.display = 'block';
-                                innerIframe.style.margin = '0 auto';
-                                innerIframe.style.position = 'relative';
-                                innerIframe.style.zIndex = '5';
-                            }
-                        }
+                        // ✨ 核心升級：iframe 欄位全面改用沙盒引擎執行，消滅點擊攔截
+                        executeAdSandbox(document.getElementById(`iframe-slot-${idx}`), code);
                     }
                 });
             } else {
                 iframeArea.innerHTML = `<p class="empty-hint">暫無 iframe 組件</p>`;
             }
 
-            // 2. 渲染 HTML 區
+            // 2. 🖼️ 渲染 HTML 區
             const htmlArea = document.getElementById('main-html-area');
             htmlArea.innerHTML = '';
             if (data.htmls && data.htmls.some(c => c.trim() !== '')) {
@@ -273,7 +263,7 @@
                 htmlArea.innerHTML = `<p class="empty-hint">暫無自訂 HTML 內容</p>`;
             }
 
-            // 3. 渲染 JS 廣告區
+            // 3. ⚡ 渲染 JS 廣告區（繼續沿用高效沙盒引擎）
             const jsArea = document.getElementById('main-js-area');
             jsArea.innerHTML = '';
             if (data.jsAds && data.jsAds.some(c => c.trim() !== '')) {
@@ -287,26 +277,14 @@
                         `;
                         jsArea.appendChild(wrapper);
                         
-                        const slotTarget = document.getElementById(`js-slot-${idx}`);
-                        // 🛠️ 智慧容錯：如果使用者把純 iframe 貼到了 JS 區，直接做降級純 HTML 處理
-                        if (code.includes('<iframe') && !code.includes('<script')) {
-                            slotTarget.innerHTML = code;
-                            const innerIframe = slotTarget.querySelector('iframe');
-                            if (innerIframe) {
-                                innerIframe.style.maxWidth = 'none';
-                                innerIframe.style.display = 'block';
-                                innerIframe.style.margin = '0 auto';
-                            }
-                        } else {
-                            executeJSBlock(slotTarget, code);
-                        }
+                        executeAdSandbox(document.getElementById(`js-slot-${idx}`), code);
                     }
                 });
             } else {
                 jsArea.innerHTML = `<p class="empty-hint">暫無 JS 動態廣告</p>`;
             }
 
-            // 4. 渲染 智慧連結預覽區
+            // 4. 🛍️ 渲染 智慧連結預覽區
             const previewArea = document.getElementById('main-preview-area');
             let previewHTML = '';
             if (data.links && data.links.some(item => item && item.url && item.url.trim() !== '')) {
