@@ -48,8 +48,7 @@
             text-align: left; border-bottom: 1px dashed #f3ede4; padding-bottom: 4px;
         }
 
-        /* 統一卡片外觀 */
-        /* ✨ 關鍵修復：加入 overflow-x: auto; 當廣告大於卡片寬度時，允許橫向滾動瀏覽，絕不裁切或擠壓廣告 */
+        /* 統一卡片外觀與防溢出橫向滾動 */
         .iframe-card, .html-wrapper-card, .js-wrapper-card, .preview-wrapper {
             background: #fff; border: 1px solid #ebdcd0; border-radius: 12px;
             padding: 14px; box-shadow: 0 4px 12px rgba(74, 63, 53, 0.02);
@@ -62,7 +61,7 @@
             padding: 0 20px; display: block; 
         }
 
-        /* 讓內部沙盒外框與廣告本體精準對齊，層級提至最上方 */
+        /* 確保廣告內容不被裁切 */
         .iframe-card iframe, .js-card iframe { 
             border-radius: 8px; margin: 5px auto 0; display: block;
             max-width: none !important; position: relative; z-index: 5;
@@ -138,12 +137,11 @@
             });
         }
 
-        // 🛠️ 終極智慧沙盒：同時支援 JS 腳本與純 iframe 代碼的載入與高頻高度追蹤
+        // 🛠️ 智慧沙盒引擎：專門處理非同步載入的 JS 動態廣告看板
         function executeAdSandbox(target, code) {
             target.innerHTML = ''; 
             if (!code || code.trim() === '') return;
 
-            // 1. 智慧尺寸提取與解析
             let initialWidth = '100%';
             let initialHeight = '90px'; 
             
@@ -154,7 +152,6 @@
             const hMatch = code.match(/height=["']?(\d+)(px|%)?["']?/i) || code.match(/"height"\s*:\s*["']?(\d+)["']?/i);
             if (hMatch) initialHeight = hMatch[1] + 'px';
 
-            // 2. 建立一級隔離沙盒外殼
             const sandboxIframe = document.createElement('iframe');
             sandboxIframe.style.width = initialWidth;
             sandboxIframe.style.height = initialHeight; 
@@ -166,7 +163,6 @@
 
             target.appendChild(sandboxIframe);
 
-            // 3. 寫入獨立上下文，繞過主網域動態寫入安全限制
             const doc = sandboxIframe.contentWindow.document;
             doc.open();
             doc.write(`
@@ -197,7 +193,6 @@
                                 }
                             } catch(e) {}
                         }
-                        // 針對動態非同步加載的廣告，前 5 秒進行高頻追蹤，防止卡片高度重疊
                         window.onload = function() {
                             notifyResize();
                             let count = 0;
@@ -221,7 +216,7 @@
         function renderEngine() {
             const data = JSON.parse(localStorage.getItem('kolFourBlocksSettings')) || defaultData;
 
-            // 1. 🛒 渲染 iframe 區（升級：一律導入智慧沙盒引擎）
+            // 1. 🛒 渲染 iframe 區（單層扁平化解析：拒絕雙重 iframe 嵌套，徹底解放點擊跳轉）
             const iframeArea = document.getElementById('main-iframe-area');
             iframeArea.innerHTML = '';
             if (data.iframes && data.iframes.some(c => c.trim() !== '')) {
@@ -229,14 +224,30 @@
                     if (code && code.trim() !== '') {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'iframe-card';
+                        
+                        let width = '728px';
+                        let height = '90px';
+                        let src = '';
+                        
+                        // 🎯 使用正則表達式精準抽離原始代碼中的參數
+                        const srcMatch = code.match(/src=["']([^"']+)["']/i);
+                        if (srcMatch) src = srcMatch[1];
+                        
+                        const wMatch = code.match(/width=["']?(\d+)(px|%)?["']?/i);
+                        if (wMatch) width = wMatch[1] + (wMatch[2] || 'px');
+                        
+                        const hMatch = code.match(/height=["']?(\d+)(px|%)?["']?/i);
+                        if (hMatch) height = hMatch[1] + 'px';
+                        
+                        // 直接生成單層原裝 iframe 嵌入主網頁，消除安全防禦所導致的點擊鎖死
                         wrapper.innerHTML = `
                             <div class="item-slot-title">iframe 欄位 #${idx + 1}</div>
-                            <div id="iframe-slot-${idx}" style="width:100%;"></div>
+                            <iframe src="${src}" width="${width}" height="${height}" 
+                                    frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics 
+                                    style="border:none; display:block; margin:5px auto 0; max-width:none !important; position:relative; z-index:5;">
+                            </iframe>
                         `;
                         iframeArea.appendChild(wrapper);
-                        
-                        // ✨ 核心升級：iframe 欄位全面改用沙盒引擎執行，消滅點擊攔截
-                        executeAdSandbox(document.getElementById(`iframe-slot-${idx}`), code);
                     }
                 });
             } else {
@@ -263,7 +274,7 @@
                 htmlArea.innerHTML = `<p class="empty-hint">暫無自訂 HTML 內容</p>`;
             }
 
-            // 3. ⚡ 渲染 JS 廣告區（繼續沿用高效沙盒引擎）
+            // 3. ⚡ 渲染 JS 廣告區（沿用高效動態沙盒引擎）
             const jsArea = document.getElementById('main-js-area');
             jsArea.innerHTML = '';
             if (data.jsAds && data.jsAds.some(c => c.trim() !== '')) {
